@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Diário Bariátrica</title>
+
+    {# region libs #}
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/css/bootstrap-datepicker.min.css" integrity="sha512-34s5cpvaNG3BknEWSuOncX28vz97bRI59UnVtEEpFX536A7BtZSJHsDyFoCl8S7Dt2TPzcrCEoHBGeM4SUBDBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    {# endregion #}
+    
+    {# region custom-styles #}
+        <style>
+            .datepicker-wrapper {
+                position: absolute;
+                z-index: 10;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                padding: 10px;
+                display: block;
+            }
+            #datepicker-link {
+                display: inline-block;
+                text-decoration: none; /* Remove o underline */
+            }
+            #datepicker-link i {
+                pointer-events: none; /* Permite que o clique no ícone acione o link */
+            }
+        </style>
+    {# endregion #}
+
+</head>
+
+<body class="bg-body-secondary">
+    <div class="vh-100 d-flex justify-content-center align-items-center p-4">
+        <div class="container bg-body rounded shadow col-lg-4 col-12 p-4">
+            <div class="col-12 d-flex align-items-stretch">
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-link link-primary">
+                        <i class="bi bi-box-arrow-left"></i>
+                    </button>
+                </form>
+                
+                <button class="btn btn-link link-primary ms-auto">
+                    <i class="bi bi-file-earmark-text"></i>
+                </button>
+            </div>
+            <h1 class="text-center mb-0 user-select-none">Diário Bariátrica</h1>
+
+            <p class="mb-3 text-center">
+                <a id="datepicker-link" href="#" class="link-primary me-1 text-decoration-none">
+                    <i class="bi bi-calendar"></i>
+                </a>
+                <span id="selected-date" class="user-select-none">{{ selected_date }}</span>
+            </p>
+
+            <div id="datepicker-container" class="datepicker-wrapper d-none">
+                <div id="datepicker"></div>
+            </div>
+
+            <form method="post" action="{% url 'registro-diario' %}">
+                {% csrf_token %}
+                
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" name="musculacao" id="MusculacaoCheck" 
+                           {% if registro and registro.musculacao %}checked{% endif %}>
+                    <label class="form-check-label user-select-none" for="MusculacaoCheck">
+                        Musculação
+                    </label>
+                </div>
+            
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" name="aerobico" id="AerobicoCheck" 
+                           {% if registro and registro.aerobico %}checked{% endif %}>
+                    <label class="form-check-label user-select-none" for="AerobicoCheck">
+                        Aeróbico
+                    </label>
+                </div>
+            
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" name="agua" id="AguaCheck" 
+                           {% if registro and registro.agua %}checked{% endif %}>
+                    <label class="form-check-label user-select-none" for="AguaCheck">
+                        Água
+                    </label>
+                </div>
+            
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" name="vitaminas" id="VitaminasCheck" 
+                           {% if registro and registro.vitaminas %}checked{% endif %}>
+                    <label class="form-check-label user-select-none" for="VitaminasCheck">
+                        Vitaminas
+                    </label>
+                </div>
+            
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" name="zero_alcool" id="ZeroAlcoolCheck" 
+                           {% if registro and registro.zero_alcool %}checked{% endif %}>
+                    <label class="form-check-label user-select-none" for="ZeroAlcoolCheck">
+                        Zero Álcool
+                    </label>
+                </div>
+            
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" name="zero_acucar" id="ZeroAcucarCheck" 
+                           {% if registro and registro.zero_acucar %}checked{% endif %}>
+                    <label class="form-check-label user-select-none" for="ZeroAcucarCheck">
+                        Zero Açúcar
+                    </label>
+                </div>
+            
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" name="zero_doces" id="ZeroDocesCheck" 
+                           {% if registro and registro.zero_doces %}checked{% endif %}>
+                    <label class="form-check-label user-select-none" for="ZeroDocesCheck">
+                        Zero Doces
+                    </label>
+                </div>
+            
+                <div class="form-floating mb-3">
+                    <textarea class="form-control" name="observacoes" id="ObservacoesTextarea" style="height: 100px">{{ registro.observacoes }}</textarea>
+                    <label for="ObservacoesTextarea">Observações</label>
+                </div>
+
+                <input type="hidden" name="date_created" value="{{ selected_date|date:'Y-m-d' }}">
+            
+                <button type="submit" class="btn btn-primary">Salvar</button>
+            </form>
+        </div>
+    </div>
+
+    {# region js-libs #}
+    
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/js/bootstrap-datepicker.min.js" integrity="sha512-LsnSViqQyaXpD4mBBdRYeP6sRwJiJveh2ZIbW41EBrNmKxgr/LFZIiWT6yr+nycvhvauz8c2nYMhrP80YhG7Cw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/locales/bootstrap-datepicker.pt-BR.min.js" integrity="sha512-mVkLPLQVfOWLRlC2ZJuyX5+0XrTlbW2cyAwyqgPkLGxhoaHNSWesYMlcUjX8X+k45YB8q90s88O7sos86636NQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    
+    {# endregion #}
+    
+    {# region custom-js-libs #}
+
+        {# region set-theme #}
+            <script>
+                (() => {
+                    'use strict'
+
+                    const getStoredTheme = () => localStorage.getItem('theme')
+                    const setStoredTheme = theme => localStorage.setItem('theme', theme)
+
+                    const getPreferredTheme = () => {
+                        const storedTheme = getStoredTheme()
+                        if (storedTheme) {
+                            return storedTheme
+                        }
+
+                        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+                    }
+
+                    const setTheme = theme => {
+                        if (theme === 'auto') {
+                            document.documentElement.setAttribute('data-bs-theme', (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'))
+                        } else {
+                            document.documentElement.setAttribute('data-bs-theme', theme)
+                        }
+                    }
+
+                    setTheme(getPreferredTheme())
+
+                    const showActiveTheme = (theme, focus = false) => {
+                        const themeSwitcher = document.querySelector('#bd-theme')
+
+                        if (!themeSwitcher) {
+                            return
+                        }
+
+                        const themeSwitcherText = document.querySelector('#bd-theme-text')
+                        const activeThemeIcon = document.querySelector('.theme-icon-active use')
+                        const btnToActive = document.querySelector(`[data-bs-theme-value="${theme}"]`)
+                        const svgOfActiveBtn = btnToActive.querySelector('svg use').getAttribute('href')
+
+                        document.querySelectorAll('[data-bs-theme-value]').forEach(element => {
+                            element.classList.remove('active')
+                            element.setAttribute('aria-pressed', 'false')
+                        })
+
+                        btnToActive.classList.add('active')
+                        btnToActive.setAttribute('aria-pressed', 'true')
+                        activeThemeIcon.setAttribute('href', svgOfActiveBtn)
+                        const themeSwitcherLabel = `${themeSwitcherText.textContent} (${btnToActive.dataset.bsThemeValue})`
+                        themeSwitcher.setAttribute('aria-label', themeSwitcherLabel)
+
+                        if (focus) {
+                            themeSwitcher.focus()
+                        }
+                    }
+
+                    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+                        const storedTheme = getStoredTheme()
+                        if (storedTheme !== 'light' && storedTheme !== 'dark') {
+                            setTheme(getPreferredTheme())
+                        }
+                    })
+
+                    window.addEventListener('DOMContentLoaded', () => {
+                    showActiveTheme(getPreferredTheme())
+
+                    document.querySelectorAll('[data-bs-theme-value]')
+                        .forEach(toggle => {
+                        toggle.addEventListener('click', () => {
+                            const theme = toggle.getAttribute('data-bs-theme-value')
+                            setStoredTheme(theme)
+                            setTheme(theme)
+                            showActiveTheme(theme, true)
+                        })
+                        })
+                    })
+                })()
+            </script>
+        {# endregion #}
+    
+        {# region create-datapicker #}
+            <script>
+                $(document).ready(function () {
+                    const $datepickerLink = $('#datepicker-link');
+                    const $datepickerContainer = $('#datepicker-container');
+                    const $datepicker = $('#datepicker');
+
+                    $datepicker.datepicker({
+                        format: 'dd/mm/yyyy',
+                        autoclose: true,
+                        language: 'pt-BR'
+                    }).on('changeDate', function (e) {
+                        const selectedDate = e.format('yyyy/mm/dd');
+                        const baseUrl = '/';
+                        window.location.href = baseUrl + selectedDate;
+                    });
+
+                    $('.datepicker-inline').removeClass('datepicker-inline');
+                
+                    $datepickerLink.on('click', function (e) {
+                        e.preventDefault();
+                        const offset = $datepickerLink.offset();
+                        $datepickerContainer.css({
+                            top: offset.top + $datepickerLink.outerHeight() + 'px',
+                            left: offset.left + 'px'
+                        }).toggleClass('d-none');
+                    });
+                
+                    $(document).on('click', function (e) {
+                        if (!$datepickerContainer.is(e.target) && !$datepickerLink.is(e.target) && $datepickerContainer.has(e.target).length === 0) {
+                            $datepickerContainer.addClass('d-none');
+                        }
+                    });
+                });
+            </script>
+        {# endregion #}
+
+    {# endregion #}
+</body>
+
+</html>
